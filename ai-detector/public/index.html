@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verity — Is this image or video AI?</title>
+  <meta name="description" content="Upload a photo or video and find out whether it was made by AI. Provenance checks, metadata forensics and a trained detection model in one report.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/">Verity</a>
+    <nav>
+      <a href="#pricing">Pricing</a>
+      <button class="credits" id="creditsBtn" title="Your scan credits">… credits</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Is it real, or is it AI?</h1>
+      <p class="lede">Drop in a photo or video. We check its content credentials, its hidden metadata and run it through a trained AI-detection model, then explain exactly what we found.</p>
+    </section>
+
+    <section class="card" id="uploader">
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="image/*,video/*" hidden>
+        <div class="drop-inner" id="dropInner">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          <strong>Drop an image or video here</strong>
+          <span>or click to choose · JPG, PNG, WebP, HEIC, MP4, MOV, WebM</span>
+          <span class="muted" id="costNote"></span>
+        </div>
+        <div class="preview" id="preview" hidden></div>
+      </label>
+      <div class="actions">
+        <button class="primary" id="analyzeBtn" disabled>Analyze</button>
+        <button class="ghost" id="resetBtn" hidden>Check another</button>
+      </div>
+      <p class="error" id="error" hidden></p>
+    </section>
+
+    <section class="card result" id="result" hidden>
+      <div class="verdict">
+        <div class="meter" id="meter"><span id="meterVal">–</span><small>AI likelihood</small></div>
+        <div>
+          <h2 id="verdictLabel"></h2>
+          <p class="muted" id="verdictSub"></p>
+        </div>
+      </div>
+      <h3>What we found</h3>
+      <ul class="signals" id="signals"></ul>
+      <div id="frames"></div>
+      <details class="filefacts"><summary>File details</summary><dl id="facts"></dl></details>
+      <p class="fine">Results are probabilistic. No detector is 100% accurate: heavy compression, screenshots and new generators can fool any model. Use this as evidence, not proof.</p>
+    </section>
+
+    <section class="how">
+      <div><h3>1 · Provenance</h3><p>We read C2PA Content Credentials and IPTC labels that OpenAI, Google, Adobe, Meta and camera makers embed. When present, they're near-definitive.</p></div>
+      <div><h3>2 · Forensics</h3><p>Generator settings, software tags, camera EXIF and tell-tale output sizes — the traces most fakes forget to scrub.</p></div>
+      <div><h3>3 · AI model</h3><p>A classifier trained on millions of real and generated images scores the pixels themselves. Videos are sampled frame by frame.</p></div>
+    </section>
+
+    <section class="pricing" id="pricing">
+      <h2>Simple pricing</h2>
+      <p class="muted">Every new visitor gets free scans. After that, buy credits — no subscription. An image costs 1 credit, a video costs <span id="videoCost">4</span>.</p>
+      <div class="packs" id="packs"></div>
+      <p class="muted small" id="payNote"></p>
+    </section>
+
+    <section class="card account" id="account">
+      <h3>Your account key</h3>
+      <p class="muted small">Your credits are tied to this browser. Save this key to restore them on another device.</p>
+      <div class="keyrow"><code id="acctKey">…</code><button class="ghost" id="copyKey">Copy</button></div>
+      <form id="restoreForm" class="keyrow">
+        <input id="restoreKey" placeholder="Paste a saved key to restore" autocomplete="off">
+        <button class="ghost" type="submit">Restore</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>© <span id="year"></span> Verity · Results are estimates, not legal or forensic certification.</footer>
+  <script src="/app.js"></script>
+</body>
+</html>
