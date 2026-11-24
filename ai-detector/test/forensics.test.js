@@ -110,3 +110,8 @@ test('A weak size hint alone stays inconclusive', () => {
   const r = analyzeBuffer(jpeg({ w: 1024, h: 1024 }));
   assert.equal(combine({ signals: r.signals }).label, 'Inconclusive');
 });
+
+test('Camera brand is not repeated when the model already includes it', () => {
+  const r = analyzeBuffer(jpeg({ exif: [[0x010f, 'Canon'], [0x0110, 'Canon EOS R6']] }));
+  assert.equal(r.camera, 'Canon EOS R6');
+});

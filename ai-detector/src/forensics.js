@@ -201,6 +201,14 @@ function parseWebp(buf, meta) {
   }
 }
 
+// "Canon" + "Canon EOS R6" -> "Canon EOS R6"; "Apple" + "iPhone 15" -> "Apple iPhone 15".
+function cameraLabel(make, model) {
+  make = typeof make === 'string' ? make.trim() : '';
+  model = typeof model === 'string' ? model.trim() : '';
+  if (make && model.toLowerCase().startsWith(make.split(' ')[0].toLowerCase())) return model;
+  return [make, model].filter(Boolean).join(' ') || null;
+}
+
 // Scan the head and tail of large files (MP4 metadata often sits at the end).
 function rawScanText(buf) {
   const LIMIT = 8 * 1024 * 1024;
@@ -271,11 +279,12 @@ function analyzeBuffer(buf, { extraTags = {} } = {}) {
 
   // 3. Camera evidence.
   const ex = meta.exif;
+  const cameraName = cameraLabel(ex.Make, ex.Model);
   const cameraFields = ['Make', 'Model', 'DateTimeOriginal', 'ExposureTime', 'FNumber', 'ISO', 'FocalLength', 'LensModel']
     .filter((k) => ex[k]);
   const videoCamera = extraTags['com.apple.quicktime.make'] || extraTags['com.android.manufacturer'] || extraTags.make;
   if (!found.length && cameraFields.length >= 4) {
-    add({ id: 'camera_exif', direction: 'real', strength: 'moderate', label: `Camera metadata: ${[ex.Make, ex.Model].filter(Boolean).join(' ') || 'present'}`,
+    add({ id: 'camera_exif', direction: 'real', strength: 'moderate', label: `Camera metadata: ${cameraName || 'present'}`,
       detail: `Found ${cameraFields.length} camera fields (${cameraFields.join(', ')}). Typical of an unedited photo, though EXIF can be copied onto a fake.` });
   } else if (!found.length && videoCamera) {
     add({ id: 'camera_video', direction: 'real', strength: 'moderate', label: `Recorded on a device: ${[videoCamera, extraTags['com.apple.quicktime.model'] || extraTags.model].filter(Boolean).join(' ')}`,
@@ -302,7 +311,7 @@ function analyzeBuffer(buf, { extraTags = {} } = {}) {
     type,
     width: meta.width,
     height: meta.height,
-    camera: [ex.Make, ex.Model].filter((v) => typeof v === 'string').join(' ') || null,
+    camera: cameraName,
     software: typeof ex.Software === 'string' ? ex.Software : null,
     c2pa: meta.c2pa,
     signals,
