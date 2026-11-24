@@ -1,0 +1,24 @@
+# Render Blueprint: dashboard.render.com → New → Blueprint → pick this repo.
+services:
+  - type: web
+    name: verity-ai-detector
+    runtime: docker
+    rootDir: ai-detector
+    dockerfilePath: ./Dockerfile
+    plan: starter            # persistent disks need a paid plan (~$7/mo)
+    healthCheckPath: /api/health
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: BASE_URL
+        sync: false          # e.g. https://verity-ai-detector.onrender.com
+      - key: SIGHTENGINE_API_USER
+        sync: false
+      - key: SIGHTENGINE_API_SECRET
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false

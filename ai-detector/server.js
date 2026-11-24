@@ -74,6 +74,8 @@ function creditSession(session) {
 }
 
 // ---- API ----
+app.get('/api/health', (req, res) => res.json({ ok: true }));
+
 app.get('/api/me', account, (req, res) => {
   const provider = providers.active();
   res.json({
